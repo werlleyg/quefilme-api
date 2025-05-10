@@ -8,6 +8,7 @@ export class GetMovieSuggestionUsecaseImpl
   implements GetMovieSuggestionUsecase
 {
   _letterAndNumbersRegex: RegExp = /[^a-zA-Z0-9\s-]/g;
+  _imdbMovieRegex: RegExp = /^tt\d+$/;
 
   constructor(
     private readonly moviesService: MoviesService,
@@ -32,6 +33,11 @@ export class GetMovieSuggestionUsecaseImpl
       throw new UnexpectedError();
     }
     const suggestMovieImdb = parts[1];
+
+    // Validate IMDb ID format (tt followed by digits)
+    if (!suggestMovieImdb.match(this._imdbMovieRegex)) {
+      throw new UnexpectedError("Invalid IMDb ID format");
+    }
 
     const movieResult = await this.moviesService.getOne(suggestMovieImdb);
 
