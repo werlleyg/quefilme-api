@@ -96,6 +96,16 @@ describe("GetMovieSuggestionUsecaseImpl", () => {
     );
   });
 
+  it("should handle with unexpected error", async () => {
+    mockAiService.generateResponse.mockRejectedValue(
+      new Error("Generic error"),
+    );
+
+    await expect(getSuggestionUsecase.exec(["Matrix"])).rejects.toBeInstanceOf(
+      UnexpectedError,
+    );
+  });
+
   it("should handle special characters in AI response", async () => {
     const imdbID = "tt7654321";
     const rawResponse = `Tenet!!! - ${imdbID}###`;
