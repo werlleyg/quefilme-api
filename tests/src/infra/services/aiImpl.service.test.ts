@@ -90,7 +90,7 @@ describe("AiServiceImpl", () => {
       error.message,
     );
 
-    expect(consoleSpy).toHaveBeenCalledWith("Ai service error: e");
+    expect(consoleSpy).toHaveBeenCalledWith(`Ai service error: ${error}`);
     consoleSpy.mockRestore();
   });
 });

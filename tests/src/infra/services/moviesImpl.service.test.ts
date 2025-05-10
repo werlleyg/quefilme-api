@@ -91,4 +91,131 @@ describe("MoviesServiceImpl", () => {
       });
     });
   });
+  describe("MoviesServiceImpl - httpResponse handling", () => {
+    describe("getOne", () => {
+      const imdbID = "tt1234567";
+
+      it("should correctly handle a valid httpResponse", async () => {
+        const mockResponse: HttpResponse = {
+          statusCode: 200,
+          body: { data: "mocked response" },
+        };
+        mockHttpClient.request.mockResolvedValueOnce(mockResponse);
+        (ResponseHandler as jest.Mock).mockReturnValueOnce(
+          "processed response",
+        );
+
+        const result = await moviesService.getOne(imdbID);
+
+        expect(ResponseHandler).toHaveBeenCalledWith(mockResponse);
+        expect(result).toBe("processed response");
+      });
+
+      it("should throw an error if httpResponse is invalid", async () => {
+        const mockResponse: HttpResponse = {
+          statusCode: 500,
+          body: null,
+        };
+        mockHttpClient.request.mockResolvedValueOnce(mockResponse);
+        (ResponseHandler as jest.Mock).mockImplementation(() => {
+          throw new Error("Invalid response");
+        });
+
+        await expect(moviesService.getOne(imdbID)).rejects.toThrow(
+          "Invalid response",
+        );
+        expect(ResponseHandler).toHaveBeenCalledWith(mockResponse);
+      });
+
+      it("should throw an error if params is null or undefined", async () => {
+        await expect(moviesService.getOne(null as any)).rejects.toThrow(
+          "Invalid IMDb ID: ID must be a non-empty string",
+        );
+        await expect(moviesService.getOne(undefined as any)).rejects.toThrow(
+          "Invalid IMDb ID: ID must be a non-empty string",
+        );
+      });
+
+      it("should throw an error if params is not a string", async () => {
+        await expect(moviesService.getOne(123 as any)).rejects.toThrow(
+          "Invalid IMDb ID: ID must be a non-empty string",
+        );
+        await expect(moviesService.getOne({} as any)).rejects.toThrow(
+          "Invalid IMDb ID: ID must be a non-empty string",
+        );
+      });
+
+      it("should throw an error if params is an empty string", async () => {
+        await expect(moviesService.getOne("")).rejects.toThrow(
+          "Invalid IMDb ID: ID must be a non-empty string",
+        );
+        await expect(moviesService.getOne("   ")).rejects.toThrow(
+          "Invalid IMDb ID: ID must be a non-empty string",
+        );
+      });
+    });
+
+    describe("getList", () => {
+      const title = "Inception";
+
+      it("should correctly handle a valid httpResponse", async () => {
+        const mockResponse: HttpResponse = {
+          statusCode: 200,
+          body: { data: "mocked response" },
+        };
+        mockHttpClient.request.mockResolvedValueOnce(mockResponse);
+        (ResponseHandler as jest.Mock).mockReturnValueOnce(
+          "processed response",
+        );
+
+        const result = await moviesService.getList(title);
+
+        expect(ResponseHandler).toHaveBeenCalledWith(mockResponse);
+        expect(result).toBe("processed response");
+      });
+
+      it("should throw an error if httpResponse is invalid", async () => {
+        const mockResponse: HttpResponse = {
+          statusCode: 404,
+          body: null,
+        };
+        mockHttpClient.request.mockResolvedValueOnce(mockResponse);
+        (ResponseHandler as jest.Mock).mockImplementation(() => {
+          throw new Error("Invalid response");
+        });
+
+        await expect(moviesService.getList(title)).rejects.toThrow(
+          "Invalid response",
+        );
+        expect(ResponseHandler).toHaveBeenCalledWith(mockResponse);
+      });
+
+      it("should throw an error if params is null or undefined", async () => {
+        await expect(moviesService.getList(null as any)).rejects.toThrow(
+          "Invalid title: Title must be a non-empty string",
+        );
+        await expect(moviesService.getList(undefined as any)).rejects.toThrow(
+          "Invalid title: Title must be a non-empty string",
+        );
+      });
+
+      it("should throw an error if params is not a string", async () => {
+        await expect(moviesService.getList(123 as any)).rejects.toThrow(
+          "Invalid title: Title must be a non-empty string",
+        );
+        await expect(moviesService.getList({} as any)).rejects.toThrow(
+          "Invalid title: Title must be a non-empty string",
+        );
+      });
+
+      it("should throw an error if params is an empty string", async () => {
+        await expect(moviesService.getList("")).rejects.toThrow(
+          "Invalid title: Title must be a non-empty string",
+        );
+        await expect(moviesService.getList("   ")).rejects.toThrow(
+          "Invalid title: Title must be a non-empty string",
+        );
+      });
+    });
+  });
 });
