@@ -7,8 +7,8 @@ import { GetMovieSuggestionUsecase } from "./interfaces/getMovieSuggestion.inter
 export class GetMovieSuggestionUsecaseImpl
   implements GetMovieSuggestionUsecase
 {
-  _letterAndNumbersRegex: RegExp = /[^a-zA-Z0-9\s-]/g;
-  _imdbMovieRegex: RegExp = /^tt\d+$/;
+  private readonly _letterAndNumbersRegex: RegExp = /[^a-zA-Z0-9\s-]/g;
+  private readonly _imdbMovieRegex: RegExp = /^tt\d+$/;
 
   constructor(
     private readonly moviesService: MoviesService,
