@@ -19,7 +19,12 @@ export class AxiosHttpClient implements HttpClient {
       if (axios?.isAxiosError(error) || error?.isAxiosError === true) {
         axiosResponse = error.response as AxiosResponse;
       } else {
-        axiosResponse = error as AxiosResponse;
+        axiosResponse = {
+          status: 500,
+          data: {
+            message: error instanceof Error ? error.message : "Unknown error",
+          },
+        } as AxiosResponse;
       }
     }
     return {
