@@ -96,7 +96,7 @@ describe("AxiosHttpClient", () => {
     });
   });
 
-  it("should return an unknown error if it is not an axios error", async () => {
+  it("should return an unexpected error if it is not an axios error", async () => {
     const requestData: HttpRequest = {
       url: "https://api.example.com/data",
       method: "get",
@@ -109,8 +109,26 @@ describe("AxiosHttpClient", () => {
     const response = await httpClient.request(requestData);
 
     expect(response).toEqual({
-      statusCode: undefined,
-      body: undefined,
+      statusCode: 500,
+      body: { message: "Network Error" },
+    });
+  });
+
+  it("should return an unknown error if it is not a knowledge error", async () => {
+    const requestData: HttpRequest = {
+      url: "https://api.example.com/data",
+      method: "get",
+    };
+
+    const unknownError = {};
+
+    mockAxios.request.mockRejectedValueOnce(unknownError);
+
+    const response = await httpClient.request(requestData);
+
+    expect(response).toEqual({
+      statusCode: 500,
+      body: { message: "Unknown error" },
     });
   });
 });
