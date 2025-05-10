@@ -5,7 +5,10 @@ import { NodeEnvEnum } from "./environment.enum";
 import { IConfig } from "./environments.interface";
 
 const loadEnvConfig = (): void => {
-  const envFile = process.env.NODE_ENV === "PROD" ? ".env" : ".env.local";
+  // Normalize NODE_ENV to uppercase before selecting the env file
+  const rawNodeEnv = (process.env.NODE_ENV ?? "").toUpperCase() as NodeEnvEnum;
+  const envFile = rawNodeEnv === NodeEnvEnum.PROD ? ".env" : ".env.local";
+
   dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 };
 
