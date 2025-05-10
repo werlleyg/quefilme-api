@@ -60,6 +60,22 @@ describe("GetMovieSuggestionUsecaseImpl", () => {
     );
   });
 
+  it("should throw UnexpectedError when AI imdb response format is invalid", async () => {
+    mockAiService.generateResponse.mockResolvedValue({
+      choices: [
+        {
+          message: {
+            content: "invalid - imdbformat",
+          },
+        },
+      ],
+    });
+
+    await expect(getSuggestionUsecase.exec(["Matrix"])).rejects.toBeInstanceOf(
+      UnexpectedError,
+    );
+  });
+
   it("should throw NotFoundError when movie is not found", async () => {
     const imdbID = "tt0000000";
 
