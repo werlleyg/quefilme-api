@@ -2,9 +2,9 @@ import { HttpStatusCodeEnum } from "../enums";
 import { AppError } from "./base.error";
 
 export class UnexpectedError extends AppError {
-  constructor() {
+  constructor(message?: string) {
     super("Unexpected error!");
-    this.message = "UnexpectedError";
+    this.message = message ?? "UnexpectedError";
     this.statusCode = HttpStatusCodeEnum.serverError;
   }
 }
