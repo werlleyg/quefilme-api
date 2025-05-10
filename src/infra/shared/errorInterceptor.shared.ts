@@ -18,7 +18,7 @@ export function errorInterceptor(
 ) {
   // Handle errors of type 'AppError' (custom application-specific errors).
   if (error instanceof AppError) {
-    response.status(error.statusCode).json({
+    return response.status(error.statusCode).json({
       status: "Error",
       message: error.message,
     });
@@ -26,7 +26,7 @@ export function errorInterceptor(
 
   // Handle errors of type 'ZodError' (validation errors).
   if (error instanceof ZodError) {
-    response.status(400).json({
+    return response.status(400).json({
       status: "Validation error",
       message: error.issues,
     });
