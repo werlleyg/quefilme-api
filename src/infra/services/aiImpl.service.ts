@@ -35,7 +35,7 @@ export class AiServiceImpl implements AiService {
 
       return ResponseHandler(httpResponse);
     } catch (e) {
-      console.log(`Ai service error: e`);
+      console.log(`Ai service error: ${e}`);
 
       throw Error(e);
     }
