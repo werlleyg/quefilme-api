@@ -36,6 +36,7 @@ const config: Config = {
     "<rootDir>/src/domain/protocols/*",
     "<rootDir>/src/domain/services/*",
     "<rootDir>/src/infra/config/*",
+    "<rootDir>/src/api/(routes|server)\\.ts$",
     ".*\\.interface\\.ts$",
   ],
 

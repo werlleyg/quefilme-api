@@ -4,7 +4,8 @@
   "main": "./api/server.ts",
   "scripts": {
     "dev": "tsx watch ./src/api/server.ts",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "author": "Werlley Ponte",
   "license": "ISC",
