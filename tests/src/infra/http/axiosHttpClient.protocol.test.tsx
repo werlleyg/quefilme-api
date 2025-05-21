@@ -1,8 +1,4 @@
-import axios, {
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosResponse } from "axios";
 import { AxiosHttpClient } from "../../../../src/infra/http";
 import { HttpRequest } from "../../../../src/domain/protocols/http";
 
