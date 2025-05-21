@@ -1,5 +1,7 @@
 import "express-async-errors";
 import express from "express";
+import helmet from "helmet";
+import cors from "cors";
 
 // Routes
 import { routes } from "./routes";
@@ -10,6 +12,9 @@ import { errorInterceptor } from "../infra/shared/errorInterceptor.shared";
 
 // Create express app
 const app = express();
+// Security middleware
+app.use(helmet());
+app.use(cors());
 // Parse JSON
 app.use(express.json());
 // Use routes in app
