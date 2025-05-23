@@ -25,3 +25,5 @@ app.use(errorInterceptor.bind(this));
 app.listen(AppConfig.PORT, () => {
   console.log(`[quefilme-api | Server started on port ${AppConfig.PORT}]`);
 });
+
+export default app;

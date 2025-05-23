@@ -5,15 +5,21 @@
   "scripts": {
     "dev": "tsx watch ./src/api/server.ts",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "start": "node dist/api/server.js",
+    "build": "tsc"
   },
   "author": "Werlley Ponte",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "axios": "^1.9.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-async-errors": "^3.1.1",
+    "helmet": "^8.1.0",
     "tsx": "^4.19.2",
     "zod": "^3.24.1"
   },
@@ -21,6 +27,8 @@
     "@jest/globals": "^29.7.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
+    "@types/axios": "^0.14.4",
+    "@types/cors": "^2.8.18",
     "@types/express": "^5.0.1",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
