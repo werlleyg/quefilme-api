@@ -6,6 +6,7 @@
     "dev": "tsx watch ./src/api/server.ts",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
     "start": "node dist/api/server.js",
     "build": "tsc"
   },
