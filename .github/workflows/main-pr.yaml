@@ -1,0 +1,90 @@
+name: Main PR Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-project:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check code
+        uses: actions/checkout@v3
+
+      - name: NodeJS Settings
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        run: npm i --frozen-lockfile
+
+      - name: Build project
+        run: npm run build
+
+      - name: Start unit tests
+        run: npm run test:cov
+
+  compare_versions:
+    runs-on: ubuntu-latest
+    needs: test-project
+    outputs:
+      create_tag: ${{ steps.compare_versions.outputs.create_tag }}
+      version: ${{ steps.get_version.outputs.version }}
+      latest_tag: ${{ steps.get_latest_tag.outputs.latest_tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Get project version
+        id: get_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" > $GITHUB_ENV
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          # Fetch tags from the main branch
+          git fetch origin main --tags
+          # Get the latest tag from the main branch
+          TAG=$(git tag --list --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 || echo "0.0.0")
+          # Remove the 'v' prefix from the tag
+          CLEAN_TAG=$(echo $TAG | sed 's/^v//')
+          echo "LATEST_TAG=$CLEAN_TAG" >> $GITHUB_ENV
+          echo "LATEST_TAG=$CLEAN_TAG" > $GITHUB_ENV
+
+      - name: Compare versions
+        id: compare_versions
+        run: |
+          # Compare versions
+          echo "Comparing versions..."
+
+          # Ensure both version and tag are properly formatted
+          LATEST_TAG_VERSION=${LATEST_TAG//v/}
+
+          # Ensure correct comparison by adding leading zeroes to ensure numeric comparison
+          VERSION_PADDED=$(printf "%s\n" "$VERSION" | awk -F. '{printf("%04d%04d%04d", $1, $2, $3)}')
+          LATEST_TAG_PADDED=$(printf "%s\n" "$LATEST_TAG_VERSION" | awk -F. '{printf("%04d%04d%04d", $1, $2, $3)}')
+
+          echo "Padded Project version: $VERSION_PADDED"
+          echo "Padded Latest tag version: $LATEST_TAG_PADDED"
+
+          # Compare the padded versions
+          if [ "$VERSION_PADDED" -gt "$LATEST_TAG_PADDED" ]; then
+            echo "Project version $VERSION is greater than latest tag $LATEST_TAG_VERSION"
+            echo "create_tag=true" >> $GITHUB_ENV
+          else
+            echo "Project version $VERSION is not greater than latest tag $LATEST_TAG_VERSION"
+            echo "create_tag=false" >> $GITHUB_ENV
+            exit 1 
+          fi
