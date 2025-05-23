@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { MoviesController } from "./controllers";
+import { HealthCheckerController, MoviesController } from "./controllers";
 
 const routes = Router();
 const moviesRoutes = Router();
 const moviesController = new MoviesController();
+const checkHealthController = new HealthCheckerController();
 
 moviesRoutes.get("/", moviesController.getMovies.bind(moviesController));
 moviesRoutes.get("/:imdbId", moviesController.getMovie.bind(moviesController));
@@ -13,5 +14,11 @@ moviesRoutes.post(
 );
 
 routes.use("/movies", moviesRoutes);
+
+// health check
+routes.get(
+  "/",
+  checkHealthController.healthChecker.bind(checkHealthController),
+);
 
 export { routes };
