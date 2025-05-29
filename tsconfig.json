@@ -4,7 +4,9 @@
     "target": "ES2024", // You can adjust your target version
     "module": "commonjs", // Adjust your module system (commonjs or esnext)
     "esModuleInterop": true, // Enable interoperability between CommonJS and ES Modules
-    "skipLibCheck": true // Optional: Skip library type checks for faster compilation
+    "skipLibCheck": true, // Optional: Skip library type checks for faster compilation
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*"], // Include all TypeScript files in the src directory
   "exclude": ["node_modules", "**/*.test.ts"] // Exclude node_modules and test files

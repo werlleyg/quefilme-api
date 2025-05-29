@@ -12,9 +12,9 @@ import { AppError } from "../../domain/errors/base.error";
  */
 export function errorInterceptor(
   error: Error,
-  request: Request,
+  _request: Request,
   response: Response,
-  next: NextFunction,
+  _next: NextFunction,
 ) {
   // Handle errors of type 'AppError' (custom application-specific errors).
   if (error instanceof AppError) {
