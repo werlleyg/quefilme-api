@@ -25,12 +25,12 @@ const envSchema = z
       .regex(/^\d+$/, { message: "PORT must be a number" })
       .transform(Number)
       .default("3000"),
-    BASE_URL_MOVIES_SERVICE: z.string().url(),
-    ACCESS_KEY_MOVIES_SERVICE: z.string(),
-    BASE_URL_TRANSLATOR: z.string().url(),
-    ACCESS_KEY_TRANSLATOR: z.string(),
-    BASE_URL_AI_SERVICE: z.string().url(),
-    AI_SERVICE_KEY: z.string(),
+    BASE_URL_MOVIES_SERVICE: z.string().url().default("https://#"),
+    ACCESS_KEY_MOVIES_SERVICE: z.string().default("example-access-key"),
+    BASE_URL_TRANSLATOR: z.string().url().default("https://#"),
+    ACCESS_KEY_TRANSLATOR: z.string().default("example-access-key"),
+    BASE_URL_AI_SERVICE: z.string().url().default("https://#"),
+    AI_SERVICE_KEY: z.string().default("example-ai-service-key"),
     APP_NAME: z.string().default("quefilme-api"),
     GRAFANA_URL: z.string().url().default("http://#"),
     GRAFANA_API_KEY: z.string().default("example-api-key"),
