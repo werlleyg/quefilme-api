@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Zod from "zod";
+import { v4 as uuidv4 } from "uuid";
 import { MoviesController } from "../../../../src/api/controllers";
 import { makeGetMovieUsecase } from "../../../../src/infra/factories/usecases/getMovie.factory";
 import { makeGetMoviesUsecase } from "../../../../src/infra/factories/usecases/getMovies.factory";
@@ -29,9 +30,9 @@ describe("MoviesController", () => {
     jest
       .spyOn(Date.prototype, "toISOString")
       .mockReturnValue(fixedDate.toISOString());
-    jest
-      .spyOn(crypto, "randomUUID")
-      .mockReturnValue("123e4567-e89b-12d3-a456-426614174000");
+    jest.mock("uuid", () => ({
+      v4: () => "123e4567-e89b-12d3-a456-426614174000",
+    }));
 
     controller = new MoviesController();
 

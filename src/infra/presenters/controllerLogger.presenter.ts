@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AppConfig } from "../config";
+import { v4 as uuidV4 } from "uuid";
 
 export namespace ControllerLoggerPresenter {
   export type MetadataReturn = {
@@ -29,7 +29,7 @@ export class ControllerLoggerPresenter {
     event: string,
   ): ControllerLoggerPresenter.MetadataReturn {
     const [req, _res] = args as [Request, Response];
-    let requestId = req.headers["x-request-id"] || crypto.randomUUID();
+    let requestId = req.headers["x-request-id"] || uuidV4();
     if (Array.isArray(requestId)) {
       requestId = requestId.join(",");
     }
