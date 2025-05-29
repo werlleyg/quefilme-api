@@ -32,8 +32,8 @@ const envSchema = z
     BASE_URL_AI_SERVICE: z.string().url(),
     AI_SERVICE_KEY: z.string(),
     APP_NAME: z.string().default("quefilme-api"),
-    GRAFANA_URL: z.string().url(),
-    GRAFANA_API_KEY: z.string(),
+    GRAFANA_URL: z.string().url().default("http://#"),
+    GRAFANA_API_KEY: z.string().default("example-api-key"),
   })
   .required();
 
