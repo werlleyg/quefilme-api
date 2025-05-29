@@ -19,8 +19,8 @@ export function loggerInterceptor(
   const labels = {
     app: AppConfig.APP_NAME,
     environment: AppConfig.NODE_ENV,
-    method: request.method,
-    path: request.baseUrl,
+    method: request?.method,
+    path: request?.baseUrl,
   };
 
   // set logger service labels
