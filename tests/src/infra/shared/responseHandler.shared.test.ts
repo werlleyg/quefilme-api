@@ -19,6 +19,17 @@ describe("ResponseHandler", () => {
     expect(result).toEqual(httpResponse.body);
   });
 
+  it("should return the body when statusCode is HttpStatusCodeEnum.noContent", () => {
+    const httpResponse: HttpResponse = {
+      statusCode: HttpStatusCodeEnum.noContent,
+      body: {},
+    };
+
+    const result = ResponseHandler(httpResponse);
+
+    expect(result).toEqual(httpResponse.body);
+  });
+
   it("should throw NotFoundError when statusCode is HttpStatusCodeEnum.notFound", () => {
     const httpResponse: HttpResponse = {
       statusCode: HttpStatusCodeEnum.notFound,

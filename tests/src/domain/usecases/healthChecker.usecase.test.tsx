@@ -5,16 +5,14 @@ describe("HealthCheckerUsecaseImpl", () => {
 
   beforeEach(() => {
     healthChecker = new HealthCheckerUsecaseImpl();
-    jest.useFakeTimers();
   });
 
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
-  it("should return the correct status message with the current date and time in UTC-0", async () => {
-    const mockDate = new Date(Date.UTC(2024, 3, 10, 12, 32, 0)); // UTC-0
-    jest.setSystemTime(mockDate);
+  it("should return the correct status message with the current date and time", async () => {
+    // Mock Date
+    const mockDate = new Date("2024-04-10T12:32:00Z");
+    jest
+      .spyOn(global, "Date")
+      .mockImplementation(() => mockDate as unknown as Date);
 
     const result = await healthChecker.exec();
 
@@ -23,9 +21,12 @@ describe("HealthCheckerUsecaseImpl", () => {
     );
   });
 
-  it("should handle single-digit minutes correctly in UTC-0", async () => {
-    const mockDate = new Date(Date.UTC(2024, 3, 10, 12, 5, 0)); // UTC-0
-    jest.setSystemTime(mockDate);
+  it("should handle single-digit minutes correctly", async () => {
+    // Mock Date
+    const mockDate = new Date("2024-04-10T12:05:00Z");
+    jest
+      .spyOn(global, "Date")
+      .mockImplementation(() => mockDate as unknown as Date);
 
     const result = await healthChecker.exec();
 
@@ -34,9 +35,12 @@ describe("HealthCheckerUsecaseImpl", () => {
     );
   });
 
-  it("should handle midnight correctly in UTC-0", async () => {
-    const mockDate = new Date(Date.UTC(2024, 3, 10, 0, 0, 0)); // UTC-0
-    jest.setSystemTime(mockDate);
+  it("should handle midnight correctly", async () => {
+    // Mock Date
+    const mockDate = new Date("2024-04-10T00:00:00Z");
+    jest
+      .spyOn(global, "Date")
+      .mockImplementation(() => mockDate as unknown as Date);
 
     const result = await healthChecker.exec();
 
@@ -45,14 +49,21 @@ describe("HealthCheckerUsecaseImpl", () => {
     );
   });
 
-  it("should handle noon correctly in UTC-0", async () => {
-    const mockDate = new Date(Date.UTC(2024, 3, 10, 12, 0, 0)); // UTC-0
-    jest.setSystemTime(mockDate);
+  it("should handle noon correctly", async () => {
+    // Mock Date
+    const mockDate = new Date("2024-04-10T12:00:00Z");
+    jest
+      .spyOn(global, "Date")
+      .mockImplementation(() => mockDate as unknown as Date);
 
     const result = await healthChecker.exec();
 
     expect(result.status).toBe(
       "API is working on April 10, 2024 at 12 hours and 0 minutes",
     );
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 });

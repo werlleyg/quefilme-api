@@ -8,13 +8,16 @@ import { routes } from "./routes";
 // config
 import { AppConfig } from "../infra/config";
 // Interceptors
-import { errorInterceptor } from "../infra/shared/errorInterceptor.shared";
+import { errorInterceptor } from "../infra/interceptors/error.interceptor";
+import { loggerInterceptor } from "../infra/interceptors/logger.interceptor";
 
 // Create express app
 const app = express();
 // Security middleware
 app.use(helmet());
 app.use(cors());
+// Use logger interceptor in app
+app.use(loggerInterceptor.bind(this));
 // Parse JSON
 app.use(express.json());
 // Use routes in app

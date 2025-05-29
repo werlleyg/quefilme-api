@@ -11,6 +11,9 @@ export const ResponseHandler = (httpResponse: HttpResponse) => {
     case HttpStatusCodeEnum.ok: {
       return httpResponse.body;
     }
+    case HttpStatusCodeEnum.noContent: {
+      return httpResponse.body;
+    }
     case HttpStatusCodeEnum.notFound:
       throw new NotFoundError();
     case HttpStatusCodeEnum.badRequest:

@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
-import { errorInterceptor } from "../../../../src/infra/shared/errorInterceptor.shared";
-import { AppError } from "../../../../src/domain/errors/base.error";
 
-describe("errorInterceptor Middleware", () => {
+import { AppError } from "../../../../src/domain/errors/base.error";
+import { errorInterceptor } from "../../../../src/infra/interceptors/error.interceptor";
+
+describe("errorInterceptor ", () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let mockNext: NextFunction;
