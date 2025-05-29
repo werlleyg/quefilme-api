@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { makeGetMovieUsecase } from "../../infra/factories/usecases/getMovie.factory";
 import { makeGetMoviesUsecase } from "../../infra/factories/usecases/getMovies.factory";
 import { makeGetMovieSuggestionUsecase } from "../../infra/factories/usecases/getMovieSuggestion.factory";
+import { ControllerLogger } from "../decorators/logger.decorator";
 
 export class MoviesController {
   /**
@@ -10,6 +11,7 @@ export class MoviesController {
    * @param {Request} request - The Express request object with imdbId in path params.
    * @param {Response} response - The Express response object to send the Movie as JSON.
    */
+  @ControllerLogger()
   public async getMovie(request: Request, response: Response) {
     const paramsSchema = Zod.object({
       imdbId: Zod.string(),
@@ -27,6 +29,7 @@ export class MoviesController {
    * @param {Request} request - The Express request object with title in query params.
    * @param {Response} response - The Express response object to send the Movies list as JSON.
    */
+  @ControllerLogger()
   public async getMovies(request: Request, response: Response) {
     const querySchema = Zod.object({
       title: Zod.string(),
@@ -44,6 +47,7 @@ export class MoviesController {
    * @param {Request} request - The Express request object with movies titles list in body.
    * @param {Response} response - The Express response object to send the Suggestion Movie as JSON.
    */
+  @ControllerLogger()
   public async getMovieSuggestion(request: Request, response: Response) {
     const bodySchema = Zod.object({
       titles: Zod.array(Zod.string()),
