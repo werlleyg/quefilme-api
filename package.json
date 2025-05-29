@@ -1,6 +1,6 @@
 {
   "name": "quefilme-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./api/server.ts",
   "scripts": {
     "dev": "tsx watch ./src/api/server.ts",
