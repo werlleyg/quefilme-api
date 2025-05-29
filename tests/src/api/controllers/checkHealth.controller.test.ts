@@ -12,6 +12,10 @@ describe("CheckHealthController", () => {
   let mockResponse: Partial<Response>;
   let mockLoggerService: any;
 
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(() => {
     // Reset mocks
     jest.clearAllMocks();
@@ -136,6 +140,4 @@ describe("CheckHealthController", () => {
       }),
     });
   });
-
-  jest.restoreAllMocks();
 });

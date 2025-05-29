@@ -34,7 +34,11 @@ export function ControllerLogger() {
       await _sendLogger(metadata);
 
       const result = await originalMethod.apply(this, args);
-      metadata = _successMetadata(metadata, startTime, result.status);
+      metadata = _successMetadata(
+        metadata,
+        startTime,
+        result?.status || result?.statusCode,
+      );
       await _sendLogger(metadata);
 
       return result;
@@ -75,7 +79,7 @@ export function ControllerLogger() {
       stack: error.stack,
     };
 
-    metadata.statusCode = error.status || 500;
+    metadata.statusCode = error?.statusCode ?? error?.status ?? 500;
     metadata.executionTime = Date.now() - startTime;
     metadata.event = "REQUEST_ERROR";
 
