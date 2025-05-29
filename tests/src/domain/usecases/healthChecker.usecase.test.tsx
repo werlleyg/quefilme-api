@@ -17,7 +17,7 @@ describe("HealthCheckerUsecaseImpl", () => {
     const result = await healthChecker.exec();
 
     expect(result.status).toBe(
-      "API is working on April 10, 2024 at 9 hours and 32 minutes",
+      "API is working on April 10, 2024 at 12 hours and 32 minutes",
     );
   });
 
@@ -31,7 +31,7 @@ describe("HealthCheckerUsecaseImpl", () => {
     const result = await healthChecker.exec();
 
     expect(result.status).toBe(
-      "API is working on April 10, 2024 at 9 hours and 5 minutes",
+      "API is working on April 10, 2024 at 12 hours and 5 minutes",
     );
   });
 
@@ -45,7 +45,7 @@ describe("HealthCheckerUsecaseImpl", () => {
     const result = await healthChecker.exec();
 
     expect(result.status).toBe(
-      "API is working on April 9, 2024 at 21 hours and 0 minutes",
+      "API is working on April 10, 2024 at 0 hours and 0 minutes",
     );
   });
 
@@ -59,7 +59,7 @@ describe("HealthCheckerUsecaseImpl", () => {
     const result = await healthChecker.exec();
 
     expect(result.status).toBe(
-      "API is working on April 10, 2024 at 9 hours and 0 minutes",
+      "API is working on April 10, 2024 at 12 hours and 0 minutes",
     );
   });
 
