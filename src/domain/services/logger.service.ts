@@ -21,5 +21,5 @@ export namespace LoggerService {
   };
   export type Model = any;
 
-  export type Buffer = [string, metadata?: Object];
+  export type Buffer = [string, string];
 }

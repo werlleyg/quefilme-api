@@ -59,13 +59,13 @@ export class LoggerServiceImpl implements LoggerService {
     const auxMetadata = {
       description,
       type,
-      ...metadata,
+      ...(metadata || {}),
     };
 
     return [
       (Math.floor(Date.now() / 1000) * 1000000000).toString(),
       JSON.stringify(auxMetadata),
-    ];
+    ] as LoggerService.Buffer;
   }
 
   private _addLog = (log: LoggerService.Buffer) => {
@@ -90,7 +90,11 @@ export class LoggerServiceImpl implements LoggerService {
 
     console.info(JSON.stringify(body, null, 2));
 
-    if (AppConfig.NODE_ENV !== NodeEnvEnum.PROD) return;
+    if (AppConfig.NODE_ENV !== NodeEnvEnum.PROD) {
+      return;
+    }
+
+    let shouldClearBuffer = false;
 
     try {
       const httpResponse = await this.httpClient.request({
@@ -101,13 +105,16 @@ export class LoggerServiceImpl implements LoggerService {
       });
 
       ResponseHandler(httpResponse);
+      shouldClearBuffer = true;
     } catch (error) {
       console.error("Error sending logs:", error);
       throw new Error("Failed to send logs to the logging service.", {
         cause: error,
       });
-    }
-
-    this._logsBuffer = []; // Clear the buffer after sending logs
+    } finally {
+      if (shouldClearBuffer) {
+        this._logsBuffer = [];
+      }
+    } // Clear the buffer after sending logs
   }
 }
