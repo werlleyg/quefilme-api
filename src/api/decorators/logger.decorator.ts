@@ -53,7 +53,7 @@ export function ControllerLogger() {
     metadata: ControllerLoggerPresenter.MetadataReturn,
     type: "info" | "error" = "info",
   ) {
-    makeLoggerService()[type](metadata.event, { metadata });
+    await makeLoggerService()[type](metadata.event, { metadata });
   }
 
   function _successMetadata(

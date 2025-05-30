@@ -12,8 +12,6 @@ export interface LoggerService {
     params?: LoggerService.Params,
   ) => Promise<LoggerService.Model>;
 
-  send: () => Promise<null>;
-
   setLabels: (labels: Object) => void;
 }
 
@@ -23,5 +21,5 @@ export namespace LoggerService {
   };
   export type Model = any;
 
-  export type Buffer = [string, metadata?: Object];
+  export type Buffer = [string, string];
 }
