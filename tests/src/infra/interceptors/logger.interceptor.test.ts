@@ -29,7 +29,6 @@ describe("loggerInterceptor", () => {
       error: jest.fn(),
       warn: jest.fn(),
       setLabels: jest.fn(),
-      send: jest.fn().mockResolvedValue(null),
     };
     (makeLoggerService as jest.Mock).mockReturnValue(mockLoggerService);
 
@@ -94,21 +93,6 @@ describe("loggerInterceptor", () => {
     });
   });
 
-  it("should register finish event listener", () => {
-    // Act
-    loggerInterceptor(
-      mockRequest as Request,
-      mockResponse as Response,
-      mockNext,
-    );
-
-    // Assert
-    expect(mockResponse.on).toHaveBeenCalledWith(
-      "finish",
-      expect.any(Function),
-    );
-  });
-
   it("should call next middleware", () => {
     // Act
     loggerInterceptor(
@@ -119,21 +103,6 @@ describe("loggerInterceptor", () => {
 
     // Assert
     expect(mockNext).toHaveBeenCalledTimes(1);
-  });
-
-  it("should send logs when request finishes", async () => {
-    // Arrange
-    loggerInterceptor(
-      mockRequest as Request,
-      mockResponse as Response,
-      mockNext,
-    );
-
-    // Act
-    await mockEventEmitter.emit();
-
-    // Assert
-    expect(mockLoggerService.send).toHaveBeenCalledTimes(1);
   });
 
   it("should handle different HTTP methods", () => {
@@ -187,11 +156,6 @@ describe("loggerInterceptor", () => {
         executionOrder.push("setLabels");
       });
 
-      mockLoggerService.send.mockImplementation(async () => {
-        executionOrder.push("send");
-        return null;
-      });
-
       mockNext.mockImplementation(() => {
         executionOrder.push("next");
       });
@@ -205,7 +169,7 @@ describe("loggerInterceptor", () => {
       await mockEventEmitter.emit();
 
       // Assert
-      expect(executionOrder).toEqual(["setLabels", "next", "send"]);
+      expect(executionOrder).toEqual(["setLabels", "next"]);
     });
   });
 });

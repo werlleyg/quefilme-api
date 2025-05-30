@@ -59,18 +59,21 @@ export class LoggerServiceImpl implements LoggerService {
     const auxMetadata = {
       description,
       type,
-      ...metadata,
+      ...(metadata || {}),
     };
 
     return [
       (Math.floor(Date.now() / 1000) * 1000000000).toString(),
       JSON.stringify(auxMetadata),
-    ];
+    ] as LoggerService.Buffer;
   }
 
-  private _addLog = (log: LoggerService.Buffer) => this._logsBuffer.push(log);
+  private _addLog = async (log: LoggerService.Buffer) => {
+    this._logsBuffer.push(log);
+    await this._send(log);
+  };
 
-  async send(): Promise<LoggerService.Model> {
+  async _send(log: LoggerService.Buffer): Promise<LoggerService.Model> {
     const headers = {
       Authorization: `Bearer ${this.apiKey}`,
       "Content-Type": "application/json",
@@ -80,22 +83,38 @@ export class LoggerServiceImpl implements LoggerService {
       streams: [
         {
           stream: this._labels,
-          values: this._logsBuffer,
+          values: [log],
         },
       ],
     };
 
     console.info(JSON.stringify(body, null, 2));
 
-    if (AppConfig.NODE_ENV !== NodeEnvEnum.PROD) return;
+    if (AppConfig.NODE_ENV !== NodeEnvEnum.PROD) {
+      return;
+    }
 
-    const httpResponse = await this.httpClient.request({
-      url: this.baseUrl,
-      method: "post",
-      body,
-      headers,
-    });
+    let shouldClearBuffer = false;
 
-    ResponseHandler(httpResponse);
+    try {
+      const httpResponse = await this.httpClient.request({
+        url: this.baseUrl,
+        method: "post",
+        body,
+        headers,
+      });
+
+      ResponseHandler(httpResponse);
+      shouldClearBuffer = true;
+    } catch (error) {
+      console.error("Error sending logs:", error);
+      throw new Error("Failed to send logs to the logging service.", {
+        cause: error,
+      });
+    } finally {
+      if (shouldClearBuffer) {
+        this._logsBuffer = [];
+      }
+    } // Clear the buffer after sending logs
   }
 }
