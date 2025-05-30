@@ -68,9 +68,9 @@ export class LoggerServiceImpl implements LoggerService {
     ] as LoggerService.Buffer;
   }
 
-  private _addLog = (log: LoggerService.Buffer) => {
+  private _addLog = async (log: LoggerService.Buffer) => {
     this._logsBuffer.push(log);
-    this._send(log);
+    await this._send(log);
   };
 
   async _send(log: LoggerService.Buffer): Promise<LoggerService.Model> {
