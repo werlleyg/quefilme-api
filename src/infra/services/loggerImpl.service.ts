@@ -68,9 +68,12 @@ export class LoggerServiceImpl implements LoggerService {
     ];
   }
 
-  private _addLog = (log: LoggerService.Buffer) => this._logsBuffer.push(log);
+  private _addLog = (log: LoggerService.Buffer) => {
+    this._logsBuffer.push(log);
+    this._send(log);
+  };
 
-  async send(): Promise<LoggerService.Model> {
+  async _send(log: LoggerService.Buffer): Promise<LoggerService.Model> {
     const headers = {
       Authorization: `Bearer ${this.apiKey}`,
       "Content-Type": "application/json",
@@ -80,7 +83,7 @@ export class LoggerServiceImpl implements LoggerService {
       streams: [
         {
           stream: this._labels,
-          values: this._logsBuffer,
+          values: [log],
         },
       ],
     };
@@ -89,13 +92,22 @@ export class LoggerServiceImpl implements LoggerService {
 
     if (AppConfig.NODE_ENV !== NodeEnvEnum.PROD) return;
 
-    const httpResponse = await this.httpClient.request({
-      url: this.baseUrl,
-      method: "post",
-      body,
-      headers,
-    });
+    try {
+      const httpResponse = await this.httpClient.request({
+        url: this.baseUrl,
+        method: "post",
+        body,
+        headers,
+      });
 
-    ResponseHandler(httpResponse);
+      ResponseHandler(httpResponse);
+    } catch (error) {
+      console.error("Error sending logs:", error);
+      throw new Error("Failed to send logs to the logging service.", {
+        cause: error,
+      });
+    }
+
+    this._logsBuffer = []; // Clear the buffer after sending logs
   }
 }

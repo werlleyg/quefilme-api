@@ -12,8 +12,6 @@ export interface LoggerService {
     params?: LoggerService.Params,
   ) => Promise<LoggerService.Model>;
 
-  send: () => Promise<null>;
-
   setLabels: (labels: Object) => void;
 }
 
