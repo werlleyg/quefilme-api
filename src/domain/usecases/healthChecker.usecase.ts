@@ -5,11 +5,19 @@ export class HealthCheckerUsecaseImpl implements HealthCheckerUsecase {
 
   async exec(): Promise<HealthCheckerUsecase.Model> {
     const now = new Date();
-    const message = `API is working on ${now.toLocaleDateString("en-US", {
+
+    const dateFormatter = new Intl.DateTimeFormat("en-US", {
       month: "long",
       day: "numeric",
       year: "numeric",
-    })} at ${now.getHours()} hours and ${now.getMinutes()} minutes`;
+      timeZone: "UTC",
+    });
+
+    const formattedDate = dateFormatter.format(now);
+    const hours = now.getUTCHours();
+    const minutes = now.getUTCMinutes();
+
+    const message = `API is working on ${formattedDate} at ${hours} hours and ${minutes} minutes`;
 
     return { status: message };
   }
