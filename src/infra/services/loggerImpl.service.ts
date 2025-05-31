@@ -63,7 +63,9 @@ export class LoggerServiceImpl implements LoggerService {
     };
 
     return [
-      (Math.floor(Date.now() / 1000) * 1000000000).toString(),
+      `${Date.now()}${Math.floor(
+        (performance.now() % 1) * 1000000,
+      )}`.toString(),
       JSON.stringify(auxMetadata),
     ] as LoggerService.Buffer;
   }

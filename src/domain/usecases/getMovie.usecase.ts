@@ -12,20 +12,20 @@ export class GetMovieUsecaseImpl implements GetMovieUsecase {
   async exec(params: GetMovieUsecase.Params): Promise<GetMovieUsecase.Model> {
     const imdbID = params;
 
-    this.logger.info(
+    await this.logger.info(
       `[GetMovieUsecase] Fetching movie with IMDB ID: ${imdbID}`,
     );
 
     const result = await this.moviesService.getOne(imdbID);
 
     if (result?.Response === "False") {
-      this.logger.error(
+      await this.logger.error(
         `[GetMovieUsecase] Movie with IMDB ID: ${imdbID} not found`,
       );
       throw new NotFoundError();
     }
 
-    this.logger.info(
+    await this.logger.info(
       `[GetMovieUsecase] Successfully fetched movie with IMDB ID: ${imdbID}`,
     );
 
