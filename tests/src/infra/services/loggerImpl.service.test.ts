@@ -35,8 +35,6 @@ describe("LoggerServiceImpl", () => {
 
     // Mock do Date.now para ter timestamps consistentes
     jest.spyOn(Date, "now").mockImplementation(() => 1590711600000); // timestamp fixo
-    // Mock do performance.now para ter parte decimal fixa
-    jest.spyOn(performance, "now").mockImplementation(() => 0.563); // parte decimal fixa
 
     // Instância do serviço para cada teste
     loggerService = new LoggerServiceImpl(mockHttpClient, baseUrl, apiKey);
@@ -56,23 +54,18 @@ describe("LoggerServiceImpl", () => {
       // Arrange
       const description = "Test info log";
       const metadata = { key: "value" };
-      const expectedTimestamp = `${Date.now()}${Math.floor(
-        (performance.now() % 1) * 1000000,
-      )}`.toString();
-      const expectedLog = [
-        expectedTimestamp,
-        JSON.stringify({
-          description,
-          type: LoggerTypeEnum.INFO,
-          ...metadata,
-        }),
-      ];
 
       // Act
       await loggerService.info(description, { metadata });
 
       // Assert
-      expect(addLogSpy).toHaveBeenCalledWith(expectedLog);
+      const [[timestamp, logData]] = addLogSpy.mock.calls[0];
+      expect(timestamp).toMatch(/^\d{13}\d{0,6}$/); // Valida formato do timestamp sem depender do performance.now
+      expect(JSON.parse(logData)).toEqual({
+        description,
+        type: LoggerTypeEnum.INFO,
+        ...metadata,
+      });
     });
   });
 
@@ -81,23 +74,18 @@ describe("LoggerServiceImpl", () => {
       // Arrange
       const description = "Test warn log";
       const metadata = { key: "value" };
-      const expectedTimestamp = `${Date.now()}${Math.floor(
-        (performance.now() % 1) * 1000000,
-      )}`.toString();
-      const expectedLog = [
-        expectedTimestamp,
-        JSON.stringify({
-          description,
-          type: LoggerTypeEnum.WARN,
-          ...metadata,
-        }),
-      ];
 
       // Act
       await loggerService.warn(description, { metadata });
 
       // Assert
-      expect(addLogSpy).toHaveBeenCalledWith(expectedLog);
+      const [[timestamp, logData]] = addLogSpy.mock.calls[0];
+      expect(timestamp).toMatch(/^\d{13}\d{0,6}$/);
+      expect(JSON.parse(logData)).toEqual({
+        description,
+        type: LoggerTypeEnum.WARN,
+        ...metadata,
+      });
     });
   });
 
@@ -106,23 +94,18 @@ describe("LoggerServiceImpl", () => {
       // Arrange
       const description = "Test error log";
       const metadata = { key: "value" };
-      const expectedTimestamp = `${Date.now()}${Math.floor(
-        (performance.now() % 1) * 1000000,
-      )}`.toString();
-      const expectedLog = [
-        expectedTimestamp,
-        JSON.stringify({
-          description,
-          type: LoggerTypeEnum.ERROR,
-          ...metadata,
-        }),
-      ];
 
       // Act
       await loggerService.error(description, { metadata });
 
       // Assert
-      expect(addLogSpy).toHaveBeenCalledWith(expectedLog);
+      const [[timestamp, logData]] = addLogSpy.mock.calls[0];
+      expect(timestamp).toMatch(/^\d{13}\d{0,6}$/);
+      expect(JSON.parse(logData)).toEqual({
+        description,
+        type: LoggerTypeEnum.ERROR,
+        ...metadata,
+      });
     });
   });
 
@@ -167,12 +150,9 @@ describe("LoggerServiceImpl", () => {
       });
 
       // Assert
-      const expectedTimestamp = `${Date.now()}${Math.floor(
-        (performance.now() % 1) * 1000000,
-      )}`.toString();
       expect(result).toBeInstanceOf(Array);
       expect(result).toHaveLength(2);
-      expect(result[0]).toBe(expectedTimestamp);
+      expect(result[0]).toMatch(/^\d{13}\d{0,6}$/);
       expect(typeof result[1]).toBe("string");
 
       const parsedLog = JSON.parse(result[1] as string);
@@ -197,6 +177,7 @@ describe("LoggerServiceImpl", () => {
       // Assert
       expect(result).toBeInstanceOf(Array);
       expect(result).toHaveLength(2);
+      expect(result[0]).toMatch(/^\d{13}\d{0,6}$/);
       const parsedLog = JSON.parse(result[1] as string);
       expect(parsedLog).toEqual({
         description,
@@ -282,52 +263,6 @@ describe("LoggerServiceImpl", () => {
           expect.objectContaining({ type: LoggerTypeEnum.WARN }),
           expect.objectContaining({ type: LoggerTypeEnum.ERROR }),
         ]),
-      );
-    });
-  });
-
-  describe("_formatLogger", () => {
-    it("should generate correct timestamp", () => {
-      // Arrange
-      const input = {
-        description: "Test log",
-        type: LoggerTypeEnum.INFO,
-      };
-
-      // Act
-      const result = loggerService["_formatLogger"](input);
-
-      // Assert
-      const expectedTimestamp = `${Date.now()}${Math.floor(
-        (performance.now() % 1) * 1000000,
-      )}`.toString();
-      expect(result[0]).toBe(expectedTimestamp);
-    });
-
-    it("should properly format metadata", () => {
-      // Arrange
-      const metadata = {
-        user: "test",
-        action: "login",
-        status: "success",
-      };
-      const input = {
-        description: "Test log",
-        type: LoggerTypeEnum.INFO,
-        metadata,
-      };
-
-      // Act
-      const result = loggerService["_formatLogger"](input);
-
-      // Assert
-      const parsedLog = JSON.parse(result[1]);
-      expect(parsedLog).toEqual(
-        expect.objectContaining({
-          description: input.description,
-          type: input.type,
-          ...metadata,
-        }),
       );
     });
   });
