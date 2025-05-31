@@ -1,11 +1,12 @@
 import { MovieEntity } from "../../../../src/domain/entities";
 import { NotFoundError } from "../../../../src/domain/errors";
-import { MoviesService } from "../../../../src/domain/services";
+import { LoggerService, MoviesService } from "../../../../src/domain/services";
 import { GetMovieUsecaseImpl } from "../../../../src/domain/usecases";
 
 describe("GetMovieUsecaseImpl", () => {
   let getMovieUsecase: GetMovieUsecaseImpl;
   let moviesService: jest.Mocked<MoviesService>;
+  let loggerService: jest.Mocked<LoggerService>;
 
   beforeEach(() => {
     moviesService = {
@@ -13,11 +14,21 @@ describe("GetMovieUsecaseImpl", () => {
       getList: jest.fn(),
     } as unknown as jest.Mocked<MoviesService>;
 
-    getMovieUsecase = new GetMovieUsecaseImpl(moviesService);
+    loggerService = {
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      setLabels: jest.fn(),
+    } as unknown as jest.Mocked<LoggerService>;
+
+    getMovieUsecase = new GetMovieUsecaseImpl(moviesService, loggerService);
   });
 
   it("should instance moviesService currectly", async () => {
-    const getMovieUsecaseTest = new GetMovieUsecaseImpl(moviesService);
+    const getMovieUsecaseTest = new GetMovieUsecaseImpl(
+      moviesService,
+      loggerService,
+    );
 
     expect(getMovieUsecaseTest).toBeInstanceOf(GetMovieUsecaseImpl);
     expect(getMovieUsecaseTest).toHaveProperty("moviesService");

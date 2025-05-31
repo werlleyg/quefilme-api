@@ -3,7 +3,7 @@ import { HttpClient } from "../../../../src/domain/protocols/http";
 import { AppConfig, NodeEnvEnum } from "../../../../src/infra/config";
 import { LoggerServiceImpl } from "../../../../src/infra/services/loggerImpl.service";
 
-// Mock AppConfig
+// Mock do AppConfig
 jest.mock("../../../../src/infra/config", () => ({
   AppConfig: {
     NODE_ENV: "PROD",
@@ -24,22 +24,22 @@ describe("LoggerServiceImpl", () => {
   let addLogSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    // Setup HttpClient mock
+    // Setup do mock do HttpClient
     mockHttpClient = {
       request: jest.fn().mockResolvedValue({ statusCode: 200 }),
     };
 
-    // Mock console.info and console.error
+    // Mock do console.info e console.error
     consoleInfoSpy = jest.spyOn(console, "info").mockImplementation();
     consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
 
-    // Mock Date.now for consistent timestamps
-    jest.spyOn(Date, "now").mockImplementation(() => 1590711600000); // fixed timestamp
+    // Mock do Date.now para ter timestamps consistentes
+    jest.spyOn(Date, "now").mockImplementation(() => 1590711600000); // timestamp fixo
 
-    // Create service instance for each test
+    // Instância do serviço para cada teste
     loggerService = new LoggerServiceImpl(mockHttpClient, baseUrl, apiKey);
 
-    // Spy on _addLog method
+    // Spy no método _addLog
     addLogSpy = jest.spyOn(loggerService as any, "_addLog");
   });
 
@@ -51,7 +51,7 @@ describe("LoggerServiceImpl", () => {
 
   describe("info", () => {
     it("should call _addLog with INFO log format", async () => {
-      // Setup test data
+      // Arrange
       const description = "Test info log";
       const metadata = { key: "value" };
       const expectedTimestamp = (
@@ -66,17 +66,17 @@ describe("LoggerServiceImpl", () => {
         }),
       ];
 
-      // Execute method
+      // Act
       await loggerService.info(description, { metadata });
 
-      // Verify the results
+      // Assert
       expect(addLogSpy).toHaveBeenCalledWith(expectedLog);
     });
   });
 
   describe("warn", () => {
     it("should call _addLog with WARN log format", async () => {
-      // Setup test data
+      // Arrange
       const description = "Test warn log";
       const metadata = { key: "value" };
       const expectedTimestamp = (
@@ -91,17 +91,17 @@ describe("LoggerServiceImpl", () => {
         }),
       ];
 
-      // Execute method
+      // Act
       await loggerService.warn(description, { metadata });
 
-      // Verify the results
+      // Assert
       expect(addLogSpy).toHaveBeenCalledWith(expectedLog);
     });
   });
 
   describe("error", () => {
     it("should call _addLog with ERROR log format", async () => {
-      // Setup test data
+      // Arrange
       const description = "Test error log";
       const metadata = { key: "value" };
       const expectedTimestamp = (
@@ -116,10 +116,10 @@ describe("LoggerServiceImpl", () => {
         }),
       ];
 
-      // Execute method
+      // Act
       await loggerService.error(description, { metadata });
 
-      // Verify the results
+      // Assert
       expect(addLogSpy).toHaveBeenCalledWith(expectedLog);
     });
   });
@@ -152,19 +152,19 @@ describe("LoggerServiceImpl", () => {
 
   describe("_formatLogger", () => {
     it("should create log entry with correct format", () => {
-      // Setup test data
+      // Arrange
       const description = "Test log";
       const type = LoggerTypeEnum.INFO;
       const metadata = { key: "value" };
 
-      // Execute the method
+      // Act
       const result = loggerService["_formatLogger"]({
         description,
         type,
         metadata,
       });
 
-      // Verify the results
+      // Assert
       const expectedTimestamp = (
         Math.floor(Date.now() / 1000) * 1000000000
       ).toString();
@@ -182,17 +182,17 @@ describe("LoggerServiceImpl", () => {
     });
 
     it("should handle log without metadata", () => {
-      // Setup test data
+      // Arrange
       const description = "Test log";
       const type = LoggerTypeEnum.INFO;
 
-      // Execute the method
+      // Act
       const result = loggerService["_formatLogger"]({
         description,
         type,
       });
 
-      // Verify the results
+      // Assert
       expect(result).toBeInstanceOf(Array);
       expect(result).toHaveLength(2);
       const parsedLog = JSON.parse(result[1] as string);
@@ -284,5 +284,49 @@ describe("LoggerServiceImpl", () => {
     });
   });
 
-  // Remove duplicate _formatLogger describe block since it's already defined above
+  describe("_formatLogger", () => {
+    it("should generate correct timestamp", () => {
+      // Arrange
+      const input = {
+        description: "Test log",
+        type: LoggerTypeEnum.INFO,
+      };
+
+      // Act
+      const result = loggerService["_formatLogger"](input);
+
+      // Assert
+      const expectedTimestamp = (
+        Math.floor(Date.now() / 1000) * 1000000000
+      ).toString();
+      expect(result[0]).toBe(expectedTimestamp);
+    });
+
+    it("should properly format metadata", () => {
+      // Arrange
+      const metadata = {
+        user: "test",
+        action: "login",
+        status: "success",
+      };
+      const input = {
+        description: "Test log",
+        type: LoggerTypeEnum.INFO,
+        metadata,
+      };
+
+      // Act
+      const result = loggerService["_formatLogger"](input);
+
+      // Assert
+      const parsedLog = JSON.parse(result[1]);
+      expect(parsedLog).toEqual(
+        expect.objectContaining({
+          description: input.description,
+          type: input.type,
+          ...metadata,
+        }),
+      );
+    });
+  });
 });

@@ -1,6 +1,7 @@
+import { log } from "console";
 import { MovieEntity } from "../entities";
 import { NotFoundError, UnexpectedError } from "../errors";
-import { MoviesService } from "../services";
+import { LoggerService, MoviesService } from "../services";
 import { AiService } from "../services/ai.service";
 import { GetMovieSuggestionUsecase } from "./interfaces/getMovieSuggestion.interface";
 
@@ -13,6 +14,7 @@ export class GetMovieSuggestionUsecaseImpl
   constructor(
     private readonly moviesService: MoviesService,
     private readonly aiService: AiService,
+    private readonly logger: LoggerService,
   ) {}
   async exec(
     params: GetMovieSuggestionUsecase.Params,
@@ -20,6 +22,10 @@ export class GetMovieSuggestionUsecaseImpl
     const listOfMovies = params.join(", ");
 
     const prompt = `Seja direto e siga exatamente o exemplo proposto a seguir após os dois pontos, me indique apenas um filme baseado na lista ${listOfMovies}, mas não pode ser nenhum dessa lista e nem repetir a sugestão anterior, seja criativo na escolha mas retorne algo que combine com os itens de lista, e coloque seu imdb CORRETO no final, ex: Cidade de Deus - tt0317248`;
+
+    this.logger.info(
+      `[GetMovieSuggestionUsecase] Generating movie suggestion for: ${listOfMovies}`,
+    );
 
     try {
       const promptResult = await this.aiService.generateResponse(prompt);
@@ -35,20 +41,42 @@ export class GetMovieSuggestionUsecaseImpl
       }
       const suggestMovieImdb = parts[1];
 
+      this.logger.info(
+        `[GetMovieSuggestionUsecase] Received movie suggestion: ${suggestMovieImdb}`,
+      );
+
       // Validate IMDb ID format (tt followed by digits)
       if (!suggestMovieImdb.match(this._imdbMovieRegex)) {
+        this.logger.error(
+          `[GetMovieSuggestionUsecase] Invalid IMDb ID format: ${suggestMovieImdb}`,
+        );
         throw new UnexpectedError("Invalid IMDb ID format");
       }
 
       const movieResult = await this.moviesService.getOne(suggestMovieImdb);
 
-      if (movieResult?.Response === "False") throw new NotFoundError();
+      if (movieResult?.Response === "False") {
+        this.logger.error(
+          `[GetMovieSuggestionUsecase] Movie with IMDB ID: ${suggestMovieImdb} not found`,
+        );
+        throw new NotFoundError();
+      }
+
+      this.logger.info(
+        `[GetMovieSuggestionUsecase] Successfully fetched movie suggestion: ${movieResult.Title}`,
+      );
 
       return MovieEntity.fromJson(movieResult);
     } catch (error) {
       if (error instanceof NotFoundError || error instanceof UnexpectedError) {
+        this.logger.error(
+          `[GetMovieSuggestionUsecase] Error fetching movie suggestion: ${error.message}`,
+        );
         throw error;
       }
+      this.logger.error(
+        `[GetMovieSuggestionUsecase] Unexpected error while getting movie suggestion: ${error.message}`,
+      );
       throw new UnexpectedError("Error while getting movie suggestion");
     }
   }

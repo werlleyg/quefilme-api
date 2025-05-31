@@ -3,6 +3,7 @@ import { makeMoviesService } from "../../../../../src/infra/factories/services/m
 import { makeAiService } from "../../../../../src/infra/factories/services/ai.factory";
 import { makeGetMovieSuggestionUsecase } from "../../../../../src/infra/factories/usecases/getMovieSuggestion.factory";
 import { MoviesService, AiService } from "../../../../../src/domain/services";
+import { makeLoggerService } from "../../../../../src/infra/factories/services/logger.factory";
 
 // Mock dependencies
 jest.mock("../../../../../src/infra/factories/services/movies.factory", () => ({
@@ -11,6 +12,10 @@ jest.mock("../../../../../src/infra/factories/services/movies.factory", () => ({
 
 jest.mock("../../../../../src/infra/factories/services/ai.factory", () => ({
   makeAiService: jest.fn(),
+}));
+
+jest.mock("../../../../../src/infra/factories/services/logger.factory", () => ({
+  makeLoggerService: jest.fn(),
 }));
 
 describe("makeGetMovieSuggestionUsecase", () => {
@@ -44,8 +49,15 @@ describe("makeGetMovieSuggestionUsecase", () => {
     const mockAiService: AiService = {
       generateResponse: jest.fn(),
     };
+    const mockLoggerService = {
+      warn: jest.fn(),
+      info: jest.fn(),
+      error: jest.fn(),
+      setLabels: jest.fn(),
+    };
     (makeMoviesService as jest.Mock).mockReturnValue(mockMoviesService);
     (makeAiService as jest.Mock).mockReturnValue(mockAiService);
+    (makeLoggerService as jest.Mock).mockReturnValue(mockLoggerService);
 
     // Act
     const getMovieSuggestionUsecase = makeGetMovieSuggestionUsecase();
@@ -54,7 +66,11 @@ describe("makeGetMovieSuggestionUsecase", () => {
     expect(makeMoviesService).toHaveBeenCalled();
     expect(makeAiService).toHaveBeenCalled();
     expect(getMovieSuggestionUsecase).toEqual(
-      new GetMovieSuggestionUsecaseImpl(mockMoviesService, mockAiService),
+      new GetMovieSuggestionUsecaseImpl(
+        mockMoviesService,
+        mockAiService,
+        mockLoggerService,
+      ),
     );
   });
 });

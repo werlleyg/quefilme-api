@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { v4 as uuidV4 } from "uuid";
 
 export namespace ControllerLoggerPresenter {
   export type MetadataReturn = {
@@ -8,7 +7,6 @@ export namespace ControllerLoggerPresenter {
     path: string;
     statusCode?: number;
     executionTime?: number;
-    requestId: string;
     timestamp: string;
     event: string;
     userId?: string;
@@ -29,16 +27,11 @@ export class ControllerLoggerPresenter {
     event: string,
   ): ControllerLoggerPresenter.MetadataReturn {
     const [req, _res] = args as [Request, Response];
-    let requestId = req.headers["x-request-id"] || uuidV4();
-    if (Array.isArray(requestId)) {
-      requestId = requestId.join(",");
-    }
 
     const metadata: ControllerLoggerPresenter.MetadataReturn = {
       controller: target.constructor.name,
       method: propertyKey,
       path: req.baseUrl,
-      requestId: requestId as string,
       timestamp: new Date().toISOString(),
       userId: req.headers["x-user-id"]?.toString(),
       userAgent: req.headers["user-agent"],
