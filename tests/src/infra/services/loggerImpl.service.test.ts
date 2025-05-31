@@ -35,6 +35,8 @@ describe("LoggerServiceImpl", () => {
 
     // Mock do Date.now para ter timestamps consistentes
     jest.spyOn(Date, "now").mockImplementation(() => 1590711600000); // timestamp fixo
+    // Mock do performance.now para ter parte decimal fixa
+    jest.spyOn(performance, "now").mockImplementation(() => 0.563); // parte decimal fixa
 
     // Instância do serviço para cada teste
     loggerService = new LoggerServiceImpl(mockHttpClient, baseUrl, apiKey);
@@ -54,9 +56,9 @@ describe("LoggerServiceImpl", () => {
       // Arrange
       const description = "Test info log";
       const metadata = { key: "value" };
-      const expectedTimestamp = (
-        Math.floor(Date.now() / 1000) * 1000000000
-      ).toString();
+      const expectedTimestamp = `${Date.now()}${Math.floor(
+        (performance.now() % 1) * 1000000,
+      )}`.toString();
       const expectedLog = [
         expectedTimestamp,
         JSON.stringify({
@@ -79,9 +81,9 @@ describe("LoggerServiceImpl", () => {
       // Arrange
       const description = "Test warn log";
       const metadata = { key: "value" };
-      const expectedTimestamp = (
-        Math.floor(Date.now() / 1000) * 1000000000
-      ).toString();
+      const expectedTimestamp = `${Date.now()}${Math.floor(
+        (performance.now() % 1) * 1000000,
+      )}`.toString();
       const expectedLog = [
         expectedTimestamp,
         JSON.stringify({
@@ -104,9 +106,9 @@ describe("LoggerServiceImpl", () => {
       // Arrange
       const description = "Test error log";
       const metadata = { key: "value" };
-      const expectedTimestamp = (
-        Math.floor(Date.now() / 1000) * 1000000000
-      ).toString();
+      const expectedTimestamp = `${Date.now()}${Math.floor(
+        (performance.now() % 1) * 1000000,
+      )}`.toString();
       const expectedLog = [
         expectedTimestamp,
         JSON.stringify({
@@ -165,9 +167,9 @@ describe("LoggerServiceImpl", () => {
       });
 
       // Assert
-      const expectedTimestamp = (
-        Math.floor(Date.now() / 1000) * 1000000000
-      ).toString();
+      const expectedTimestamp = `${Date.now()}${Math.floor(
+        (performance.now() % 1) * 1000000,
+      )}`.toString();
       expect(result).toBeInstanceOf(Array);
       expect(result).toHaveLength(2);
       expect(result[0]).toBe(expectedTimestamp);
@@ -296,9 +298,9 @@ describe("LoggerServiceImpl", () => {
       const result = loggerService["_formatLogger"](input);
 
       // Assert
-      const expectedTimestamp = (
-        Math.floor(Date.now() / 1000) * 1000000000
-      ).toString();
+      const expectedTimestamp = `${Date.now()}${Math.floor(
+        (performance.now() % 1) * 1000000,
+      )}`.toString();
       expect(result[0]).toBe(expectedTimestamp);
     });
 
