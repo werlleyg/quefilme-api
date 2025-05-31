@@ -17,7 +17,7 @@ export class GetMoviesUsecaseImpl implements GetMoviesUsecase {
       target: LanguagesEnum.EN,
     };
 
-    this.logger.info(
+    await this.logger.info(
       `[GetMoviesUsecase] Translating title: ${params.query} from ${params.source} to ${params.target}`,
     );
 
@@ -26,10 +26,12 @@ export class GetMoviesUsecaseImpl implements GetMoviesUsecase {
     const translatedTitle =
       translatorResult?.data?.translations[0]?.translatedText ?? "";
 
-    this.logger.info(`[GetMoviesUsecase] Translated title: ${translatedTitle}`);
+    await this.logger.info(
+      `[GetMoviesUsecase] Translated title: ${translatedTitle}`,
+    );
 
     try {
-      this.logger.info(
+      await this.logger.info(
         `[GetMoviesUsecase] Fetched movies for title: ${translatedTitle}`,
       );
 
@@ -41,7 +43,7 @@ export class GetMoviesUsecaseImpl implements GetMoviesUsecase {
         MovieEntity.fromJson(movie),
       );
     } catch (error) {
-      this.logger.error(
+      await this.logger.error(
         `[GetMoviesUsecase] Error fetching movies: ${error.message}`,
       );
 
