@@ -123,6 +123,24 @@ describe("GetMoviesUsecaseImpl", () => {
     expect(result).toEqual([]);
   });
 
+  it("should return an empty array and log warn when moviesService.getList returns Response = 'False'", async () => {
+    const title = "O Poderoso Chefão";
+    const translatedTitle = "The Godfather";
+
+    translatorService.translator.mockResolvedValue({
+      data: { translations: [{ translatedText: translatedTitle }] },
+    });
+
+    moviesService.getList.mockResolvedValue({ Response: "False" });
+
+    const result = await getMoviesUsecase.exec(title);
+
+    expect(result).toEqual([]);
+    expect(loggerService.warn).toHaveBeenCalledWith(
+      `[GetMoviesUsecase] No movies found for title: ${translatedTitle}`,
+    );
+  });
+
   it("should return an empty array and log error when moviesService.getList throws", async () => {
     const title = "O Poderoso Chefão";
     const translatedTitle = "The Godfather";

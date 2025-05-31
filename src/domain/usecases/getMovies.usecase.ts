@@ -39,6 +39,13 @@ export class GetMoviesUsecaseImpl implements GetMoviesUsecase {
         translatedTitle?.trim()?.toLowerCase(),
       );
 
+      if (moviesResult?.Response === "False") {
+        await this.logger.warn(
+          `[GetMoviesUsecase] No movies found for title: ${translatedTitle}`,
+        );
+        return [];
+      }
+
       return moviesResult?.Search?.map((movie: any) =>
         MovieEntity.fromJson(movie),
       );
