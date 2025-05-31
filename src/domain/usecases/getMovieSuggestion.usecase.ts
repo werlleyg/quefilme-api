@@ -23,7 +23,7 @@ export class GetMovieSuggestionUsecaseImpl
 
     const prompt = `Seja direto e siga exatamente o exemplo proposto a seguir após os dois pontos, me indique apenas um filme baseado na lista ${listOfMovies}, mas não pode ser nenhum dessa lista e nem repetir a sugestão anterior, seja criativo na escolha mas retorne algo que combine com os itens de lista, e coloque seu imdb CORRETO no final, ex: Cidade de Deus - tt0317248`;
 
-    this.logger.info(
+    await this.logger.info(
       `[GetMovieSuggestionUsecase] Generating movie suggestion for: ${listOfMovies}`,
     );
 
@@ -41,13 +41,13 @@ export class GetMovieSuggestionUsecaseImpl
       }
       const suggestMovieImdb = parts[1];
 
-      this.logger.info(
+      await this.logger.info(
         `[GetMovieSuggestionUsecase] Received movie suggestion: ${suggestMovieImdb}`,
       );
 
       // Validate IMDb ID format (tt followed by digits)
       if (!suggestMovieImdb.match(this._imdbMovieRegex)) {
-        this.logger.error(
+        await this.logger.error(
           `[GetMovieSuggestionUsecase] Invalid IMDb ID format: ${suggestMovieImdb}`,
         );
         throw new UnexpectedError("Invalid IMDb ID format");
@@ -56,25 +56,25 @@ export class GetMovieSuggestionUsecaseImpl
       const movieResult = await this.moviesService.getOne(suggestMovieImdb);
 
       if (movieResult?.Response === "False") {
-        this.logger.error(
+        await this.logger.error(
           `[GetMovieSuggestionUsecase] Movie with IMDB ID: ${suggestMovieImdb} not found`,
         );
         throw new NotFoundError();
       }
 
-      this.logger.info(
+      await this.logger.info(
         `[GetMovieSuggestionUsecase] Successfully fetched movie suggestion: ${movieResult.Title}`,
       );
 
       return MovieEntity.fromJson(movieResult);
     } catch (error) {
       if (error instanceof NotFoundError || error instanceof UnexpectedError) {
-        this.logger.error(
+        await this.logger.error(
           `[GetMovieSuggestionUsecase] Error fetching movie suggestion: ${error.message}`,
         );
         throw error;
       }
-      this.logger.error(
+      await this.logger.error(
         `[GetMovieSuggestionUsecase] Unexpected error while getting movie suggestion: ${error.message}`,
       );
       throw new UnexpectedError("Error while getting movie suggestion");
