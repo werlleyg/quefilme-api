@@ -1,6 +1,7 @@
 import { MovieEntity } from "../../../../src/domain/entities";
 import { LanguagesEnum } from "../../../../src/domain/enums";
 import {
+  LoggerService,
   MoviesService,
   TranslatorService,
 } from "../../../../src/domain/services";
@@ -10,6 +11,7 @@ describe("GetMoviesUsecaseImpl", () => {
   let getMoviesUsecase: GetMoviesUsecaseImpl;
   let moviesService: jest.Mocked<MoviesService>;
   let translatorService: jest.Mocked<TranslatorService>;
+  let loggerService: jest.Mocked<LoggerService>;
 
   beforeEach(() => {
     moviesService = {
@@ -21,9 +23,17 @@ describe("GetMoviesUsecaseImpl", () => {
       translator: jest.fn(),
     } as unknown as jest.Mocked<TranslatorService>;
 
+    loggerService = {
+      warn: jest.fn(),
+      info: jest.fn(),
+      error: jest.fn(),
+      setLabels: jest.fn(),
+    } as unknown as jest.Mocked<LoggerService>;
+
     getMoviesUsecase = new GetMoviesUsecaseImpl(
       moviesService,
       translatorService,
+      loggerService,
     );
   });
 
@@ -111,5 +121,24 @@ describe("GetMoviesUsecaseImpl", () => {
     const result = await getMoviesUsecase.exec(title);
 
     expect(result).toEqual([]);
+  });
+
+  it("should return an empty array and log error when moviesService.getList throws", async () => {
+    const title = "O Poderoso Chefão";
+    const translatedTitle = "The Godfather";
+    const error = new Error("API error");
+
+    translatorService.translator.mockResolvedValue({
+      data: { translations: [{ translatedText: translatedTitle }] },
+    });
+
+    moviesService.getList.mockRejectedValue(error);
+
+    const result = await getMoviesUsecase.exec(title);
+
+    expect(result).toEqual([]);
+    expect(loggerService.error).toHaveBeenCalledWith(
+      `[GetMoviesUsecase] Error fetching movies: ${error.message}`,
+    );
   });
 });
