@@ -6,6 +6,12 @@ describe("GetMovieSuggestionUsecaseImpl", () => {
   const mockMoviesService = {
     getOne: jest.fn(),
   };
+  const mockLoggerService = {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    setLabels: jest.fn(),
+  };
 
   const mockAiService = {
     generateResponse: jest.fn(),
@@ -14,6 +20,7 @@ describe("GetMovieSuggestionUsecaseImpl", () => {
   const getSuggestionUsecase = new GetMovieSuggestionUsecaseImpl(
     mockMoviesService as any,
     mockAiService as any,
+    mockLoggerService as any,
   );
 
   beforeEach(() => {
