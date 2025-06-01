@@ -20,7 +20,7 @@ export class LoggerServiceImpl implements LoggerService {
     description: string,
     params?: LoggerService.Params,
   ): Promise<LoggerService.Model> =>
-    this._addLog(
+    await this._addLog(
       this._formatLogger({ description, type: LoggerTypeEnum.INFO, ...params }),
     );
 
@@ -28,7 +28,7 @@ export class LoggerServiceImpl implements LoggerService {
     description: string,
     params?: LoggerService.Params,
   ): Promise<LoggerService.Model> =>
-    this._addLog(
+    await this._addLog(
       this._formatLogger({ description, type: LoggerTypeEnum.WARN, ...params }),
     );
 
@@ -36,7 +36,7 @@ export class LoggerServiceImpl implements LoggerService {
     description: string,
     params?: LoggerService.Params,
   ): Promise<LoggerService.Model> =>
-    this._addLog(
+    await this._addLog(
       this._formatLogger({
         description,
         type: LoggerTypeEnum.ERROR,
@@ -62,10 +62,10 @@ export class LoggerServiceImpl implements LoggerService {
       ...(metadata || {}),
     };
 
+    const timestampNano = Date.now() * 1000000;
+
     return [
-      `${Date.now()}${Math.floor(
-        (performance.now() % 1) * 1000000,
-      )}`.toString(),
+      timestampNano.toString(),
       JSON.stringify(auxMetadata),
     ] as LoggerService.Buffer;
   }
