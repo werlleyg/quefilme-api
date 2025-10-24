@@ -31,15 +31,7 @@ describe("GetMovieSuggestionUsecaseImpl", () => {
     const mockParams = ["Matrix", "Inception"];
     const imdbID = "tt1234567";
 
-    mockAiService.generateResponse.mockResolvedValue({
-      choices: [
-        {
-          message: {
-            content: `Tenet - ${imdbID}`,
-          },
-        },
-      ],
-    });
+    mockAiService.generateResponse.mockResolvedValue(`Tenet - ${imdbID}`);
 
     const movieData = { Title: "Tenet", imdbID, Response: "True" };
     mockMoviesService.getOne.mockResolvedValue(movieData);
@@ -86,15 +78,7 @@ describe("GetMovieSuggestionUsecaseImpl", () => {
   it("should throw NotFoundError when movie is not found", async () => {
     const imdbID = "tt0000000";
 
-    mockAiService.generateResponse.mockResolvedValue({
-      choices: [
-        {
-          message: {
-            content: `Tenet - ${imdbID}`,
-          },
-        },
-      ],
-    });
+    mockAiService.generateResponse.mockResolvedValue(`Tenet - ${imdbID}`);
 
     mockMoviesService.getOne.mockResolvedValue({ Response: "False" });
 
@@ -115,23 +99,29 @@ describe("GetMovieSuggestionUsecaseImpl", () => {
 
   it("should handle special characters in AI response", async () => {
     const imdbID = "tt7654321";
-    const rawResponse = `Tenet!!! - ${imdbID}###`;
+    const rawResponse = `Tenet!!! - ${imdbID} ###`;
 
-    mockAiService.generateResponse.mockResolvedValue({
-      choices: [
-        {
-          message: {
-            content: rawResponse,
-          },
-        },
-      ],
-    });
+    mockAiService.generateResponse.mockResolvedValue(rawResponse);
 
     const movieData = { Title: "Tenet", imdbID, Response: "True" };
     mockMoviesService.getOne.mockResolvedValue(movieData);
 
-    const result = await getSuggestionUsecase.exec(["Matrix"]);
+    const result = getSuggestionUsecase.exec(["Matrix"]);
 
-    expect(result).toEqual(MovieEntity.fromJson(movieData));
+    expect(result).rejects.toBeInstanceOf(UnexpectedError);
+  });
+
+  it("should handle with empty AI response", async () => {
+    const imdbID = "tt7654321";
+    const rawResponse = ``;
+
+    mockAiService.generateResponse.mockResolvedValue(rawResponse);
+
+    const movieData = { Title: "Tenet", imdbID, Response: "True" };
+    mockMoviesService.getOne.mockResolvedValue(movieData);
+
+    const result = getSuggestionUsecase.exec(["Matrix"]);
+
+    expect(result).rejects.toBeInstanceOf(UnexpectedError);
   });
 });
