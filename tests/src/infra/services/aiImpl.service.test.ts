@@ -21,6 +21,33 @@ describe("AiServiceImpl", () => {
     statusCode: 200,
     body: { data: "mocked response" },
   };
+  const mockProcessedResponse = {
+    id: "gen-1761263336-XVL9fM3rErjY0I4XMuIq",
+    provider: "DeepInfra",
+    model: "deepseek/deepseek-v3.2-exp",
+    object: "chat.completion",
+    created: 1761263336,
+    choices: [
+      {
+        logprobs: null,
+        finish_reason: "stop",
+        native_finish_reason: "stop",
+        index: 0,
+        message: {
+          role: "assistant",
+          content: "Yu-Gi-Oh! - tt0249516",
+          refusal: null,
+          reasoning: null,
+        },
+      },
+    ],
+    usage: {
+      prompt_tokens: 116,
+      completion_tokens: 12,
+      total_tokens: 128,
+      prompt_tokens_details: null,
+    },
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -28,7 +55,7 @@ describe("AiServiceImpl", () => {
 
   it("should send a request with the correct structure and return the processed response", async () => {
     mockHttpClient.request.mockResolvedValueOnce(mockResponse);
-    (ResponseHandler as jest.Mock).mockReturnValueOnce("processed response");
+    (ResponseHandler as jest.Mock).mockReturnValueOnce(mockProcessedResponse);
 
     const result = await aiService.generateResponse(prompt);
 
@@ -40,7 +67,7 @@ describe("AiServiceImpl", () => {
         "Content-Type": "application/json",
       },
       body: {
-        model: "deepseek/deepseek-r1-zero:free",
+        model: "deepseek/deepseek-v3.2-exp",
         messages: [
           {
             role: "user",
@@ -51,7 +78,7 @@ describe("AiServiceImpl", () => {
     });
 
     expect(ResponseHandler).toHaveBeenCalledWith(mockResponse);
-    expect(result).toBe("processed response");
+    expect(result).toBe("Yu-Gi-Oh! - tt0249516");
   });
 
   it("should throw an error if the httpClient request fails", async () => {
@@ -70,7 +97,7 @@ describe("AiServiceImpl", () => {
         "Content-Type": "application/json",
       },
       body: {
-        model: "deepseek/deepseek-r1-zero:free",
+        model: "deepseek/deepseek-v3.2-exp",
         messages: [
           {
             role: "user",
