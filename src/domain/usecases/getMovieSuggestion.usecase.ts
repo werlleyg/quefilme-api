@@ -21,7 +21,7 @@ export class GetMovieSuggestionUsecaseImpl
   ): Promise<GetMovieSuggestionUsecase.Model> {
     const listOfMovies = params.join(", ");
 
-    const prompt = `Seja direto e siga exatamente o exemplo proposto a seguir após os dois pontos, me indique apenas um filme baseado na lista ${listOfMovies}, mas não pode ser nenhum dessa lista e nem repetir a sugestão anterior, seja criativo na escolha mas retorne algo que combine com os itens de lista, e coloque seu imdb CORRETO no final, ex: Cidade de Deus - tt0317248`;
+    const prompt = `Seja direto e siga exatamente o exemplo proposto a seguir após os dois pontos, me indique apenas um filme baseado na lista ${listOfMovies}, mas não pode ser nenhum dessa lista e nem repetir a sugestão anterior, seja criativo na escolha mas retorne algo que combine com os itens da lista, no mesmo estilo, temática, e coloque seu respectivo IMDb CORRETO no final, ex: Cidade de Deus - tt0317248`;
 
     await this.logger.info(
       `[GetMovieSuggestionUsecase] Generating movie suggestion for: ${listOfMovies}`,
@@ -30,12 +30,7 @@ export class GetMovieSuggestionUsecaseImpl
     try {
       const promptResult = await this.aiService.generateResponse(prompt);
 
-      const result = await promptResult.choices[0].message.content.replace(
-        this._letterAndNumbersRegex,
-        "",
-      );
-
-      const parts = await result?.split(" - ");
+      const parts = await promptResult?.split(" - ");
       if (!parts || parts?.length < 2) {
         throw new UnexpectedError();
       }
