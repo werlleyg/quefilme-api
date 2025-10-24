@@ -1,6 +1,7 @@
 import { HttpClient } from "../../domain/protocols/http";
+import { AiServiceMapper } from "../mappers/ai-service.mapper";
 import { ResponseHandler } from "../shared/responseHandler.shared";
-import { AiService } from "./../../domain/services/ai.service";
+import { AiService } from "./../../domain/services";
 
 export class AiServiceImpl implements AiService {
   constructor(
@@ -16,7 +17,7 @@ export class AiServiceImpl implements AiService {
     };
 
     const body = {
-      model: "deepseek/deepseek-r1-zero:free",
+      model: "deepseek/deepseek-v3.2-exp",
       messages: [
         {
           role: "user",
@@ -33,7 +34,9 @@ export class AiServiceImpl implements AiService {
         headers,
       });
 
-      return ResponseHandler(httpResponse);
+      const output = ResponseHandler(httpResponse);
+
+      return await AiServiceMapper.toMoviePattern(output);
     } catch (e) {
       console.log(`Ai service error: ${e}`);
 
