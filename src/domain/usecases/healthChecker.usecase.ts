@@ -4,21 +4,14 @@ export class HealthCheckerUsecaseImpl implements HealthCheckerUsecase {
   constructor() {}
 
   async exec(): Promise<HealthCheckerUsecase.Model> {
-    const now = new Date();
+    const output = {
+      status: "UP" as const,
+      timestamp: new Date().toISOString(),
+      uptime: Math.round(process.uptime() * 100) / 100,
+      version: process.env.npm_package_version || "1.0.0",
+      environment: process.env.NODE_ENV || "DEV",
+    };
 
-    const dateFormatter = new Intl.DateTimeFormat("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-      timeZone: "UTC",
-    });
-
-    const formattedDate = dateFormatter.format(now);
-    const hours = now.getUTCHours();
-    const minutes = now.getUTCMinutes();
-
-    const message = `API is working on ${formattedDate} at ${hours} hours and ${minutes} minutes`;
-
-    return { status: message };
+    return output;
   }
 }

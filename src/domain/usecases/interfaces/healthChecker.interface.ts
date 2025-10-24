@@ -3,5 +3,11 @@ export interface HealthCheckerUsecase {
 }
 
 export namespace HealthCheckerUsecase {
-  export type Model = { status: string };
+  export type Model = {
+    status: string;
+    timestamp?: string;
+    uptime?: number;
+    version?: string;
+    environment?: string;
+  };
 }
