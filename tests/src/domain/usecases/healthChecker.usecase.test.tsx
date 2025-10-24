@@ -16,9 +16,10 @@ describe("HealthCheckerUsecaseImpl", () => {
 
     const result = await healthChecker.exec();
 
-    expect(result.status).toBe(
-      "API is working on April 10, 2024 at 12 hours and 32 minutes",
-    );
+    expect(result.status).toBe("UP");
+    expect(result.timestamp).toBe("2024-04-10T12:32:00.000Z");
+    expect(result.uptime).toBeGreaterThanOrEqual(1);
+    expect(result.environment).toBe("TEST");
   });
 
   it("should handle single-digit minutes correctly", async () => {
@@ -30,9 +31,8 @@ describe("HealthCheckerUsecaseImpl", () => {
 
     const result = await healthChecker.exec();
 
-    expect(result.status).toBe(
-      "API is working on April 10, 2024 at 12 hours and 5 minutes",
-    );
+    expect(result.status).toBe("UP");
+    expect(result.timestamp).toBe("2024-04-10T12:05:00.000Z");
   });
 
   it("should handle midnight correctly", async () => {
@@ -44,9 +44,8 @@ describe("HealthCheckerUsecaseImpl", () => {
 
     const result = await healthChecker.exec();
 
-    expect(result.status).toBe(
-      "API is working on April 10, 2024 at 0 hours and 0 minutes",
-    );
+    expect(result.status).toBe("UP");
+    expect(result.timestamp).toBe("2024-04-10T00:00:00.000Z");
   });
 
   it("should handle noon correctly", async () => {
@@ -58,9 +57,71 @@ describe("HealthCheckerUsecaseImpl", () => {
 
     const result = await healthChecker.exec();
 
-    expect(result.status).toBe(
-      "API is working on April 10, 2024 at 12 hours and 0 minutes",
-    );
+    expect(result.status).toBe("UP");
+  });
+
+  it("should return the correct version from package.json when available", async () => {
+    // Mock process.env.npm_package_version
+    const originalPackageVersion = process.env.npm_package_version;
+    process.env.npm_package_version = "0.0.9";
+
+    const result = await healthChecker.exec();
+
+    expect(result.version).toBe("0.0.9");
+
+    // Restore original value
+    if (originalPackageVersion) {
+      process.env.npm_package_version = originalPackageVersion;
+    } else {
+      delete process.env.npm_package_version;
+    }
+  });
+
+  it("should return default version when npm_package_version is not available", async () => {
+    // Mock process.env.npm_package_version as undefined
+    const originalPackageVersion = process.env.npm_package_version;
+    delete process.env.npm_package_version;
+
+    const result = await healthChecker.exec();
+
+    expect(result.version).toBe("1.0.0");
+
+    // Restore original value
+    if (originalPackageVersion) {
+      process.env.npm_package_version = originalPackageVersion;
+    }
+  });
+
+  it("should return the correct environment from NODE_ENV when available", async () => {
+    // Mock process.env.NODE_ENV
+    const originalNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = "PRODUCTION";
+
+    const result = await healthChecker.exec();
+
+    expect(result.environment).toBe("PRODUCTION");
+
+    // Restore original value
+    if (originalNodeEnv) {
+      process.env.NODE_ENV = originalNodeEnv;
+    } else {
+      delete process.env.NODE_ENV;
+    }
+  });
+
+  it("should return default environment when NODE_ENV is not available", async () => {
+    // Mock process.env.NODE_ENV as undefined
+    const originalNodeEnv = process.env.NODE_ENV;
+    delete process.env.NODE_ENV;
+
+    const result = await healthChecker.exec();
+
+    expect(result.environment).toBe("DEV");
+
+    // Restore original value
+    if (originalNodeEnv) {
+      process.env.NODE_ENV = originalNodeEnv;
+    }
   });
 
   afterEach(() => {
