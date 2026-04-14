@@ -65,12 +65,16 @@ export class GetMovieSuggestionUsecaseImpl
     } catch (error) {
       if (error instanceof NotFoundError || error instanceof UnexpectedError) {
         await this.logger.error(
-          `[GetMovieSuggestionUsecase] Error fetching movie suggestion: ${error.message}`,
+          `[GetMovieSuggestionUsecase] Error fetching movie suggestion: ${JSON.stringify(
+            error,
+          )}`,
         );
         throw error;
       }
       await this.logger.error(
-        `[GetMovieSuggestionUsecase] Unexpected error while getting movie suggestion: ${error.message}`,
+        `[GetMovieSuggestionUsecase] Unexpected error while getting movie suggestion: ${JSON.stringify(
+          error,
+        )}`,
       );
       throw new UnexpectedError("Error while getting movie suggestion");
     }

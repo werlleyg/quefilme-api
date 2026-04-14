@@ -14,7 +14,8 @@ describe("AiServiceImpl", () => {
 
   const baseUrl = "https://api.example.com";
   const apiKey = "test-api-key";
-  const aiService = new AiServiceImpl(mockHttpClient, baseUrl, apiKey);
+  const model = "deepseek/deepseek-v3.2-exp";
+  const aiService = new AiServiceImpl(mockHttpClient, baseUrl, apiKey, model);
 
   const prompt = "Test prompt";
   const mockResponse: HttpResponse = {
@@ -24,7 +25,7 @@ describe("AiServiceImpl", () => {
   const mockProcessedResponse = {
     id: "gen-1761263336-XVL9fM3rErjY0I4XMuIq",
     provider: "DeepInfra",
-    model: "deepseek/deepseek-v3.2-exp",
+    model: model,
     object: "chat.completion",
     created: 1761263336,
     choices: [
@@ -67,7 +68,7 @@ describe("AiServiceImpl", () => {
         "Content-Type": "application/json",
       },
       body: {
-        model: "deepseek/deepseek-v3.2-exp",
+        model: model,
         messages: [
           {
             role: "user",
