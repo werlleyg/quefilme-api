@@ -31,6 +31,7 @@ const envSchema = z
     ACCESS_KEY_TRANSLATOR: z.string().default("example-access-key"),
     BASE_URL_AI_SERVICE: z.string().url().default("https://example.com"),
     AI_SERVICE_KEY: z.string().default("example-ai-service-key"),
+    AI_SERVICE_MODEL: z.string().default("openrouter/elephant-alpha"),
     APP_NAME: z.string().default("quefilme-api"),
     GRAFANA_URL: z.string().url().default("https://example.com"),
     GRAFANA_API_KEY: z.string().default("example-api-key"),

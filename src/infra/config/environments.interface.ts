@@ -9,6 +9,7 @@ export interface IConfig {
   BASE_URL_TRANSLATOR: string;
   ACCESS_KEY_TRANSLATOR: string;
   AI_SERVICE_KEY: string;
+  AI_SERVICE_MODEL: string;
   APP_NAME: string;
   GRAFANA_URL: string;
   GRAFANA_API_KEY: string;

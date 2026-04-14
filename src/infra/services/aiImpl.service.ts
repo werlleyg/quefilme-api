@@ -8,6 +8,7 @@ export class AiServiceImpl implements AiService {
     private readonly httpClient: HttpClient,
     private readonly baseUrl: string,
     private readonly apiKey: string,
+    private readonly model: string,
   ) {}
 
   async generateResponse(prompt: AiService.Params): Promise<AiService.Model> {
@@ -17,7 +18,7 @@ export class AiServiceImpl implements AiService {
     };
 
     const body = {
-      model: "deepseek/deepseek-v3.2-exp",
+      model: this.model,
       messages: [
         {
           role: "user",
@@ -40,7 +41,7 @@ export class AiServiceImpl implements AiService {
     } catch (e) {
       console.log(`Ai service error: ${e}`);
 
-      throw Error(e);
+      throw new Error(e instanceof Error ? e.message : String(e));
     }
   }
 }
