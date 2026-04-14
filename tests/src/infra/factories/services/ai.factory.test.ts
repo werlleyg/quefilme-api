@@ -14,6 +14,7 @@ jest.mock("../../../../../src/infra/config", () => ({
   AppConfig: {
     BASE_URL_AI_SERVICE: "http://mock-base-url.com",
     AI_SERVICE_KEY: "mock-ai-service-key",
+    AI_SERVICE_MODEL: "openrouter/elephant-alpha",
   },
 }));
 
