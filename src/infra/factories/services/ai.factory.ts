@@ -8,4 +8,5 @@ export const makeAiService = (): AiService =>
     makeAxiosHttpClient(),
     AppConfig.BASE_URL_AI_SERVICE,
     AppConfig.AI_SERVICE_KEY,
+    AppConfig.AI_SERVICE_MODEL,
   );
